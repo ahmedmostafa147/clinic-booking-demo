@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نظام الحجز الذكي للعيادات</title>
+<style>
+@font-face{font-family:"Thmanyah Sans";src:url(fonts/thmanyahsans-Regular.otf) format("opentype");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url(fonts/thmanyahsans-Medium.otf) format("opentype");font-weight:500 600}
+@font-face{font-family:"Thmanyah Sans";src:url(fonts/thmanyahsans-Bold.otf) format("opentype");font-weight:700}
+@font-face{font-family:"Thmanyah Serif Display";src:url(fonts/thmanyahserifdisplay-Bold.otf) format("opentype");font-weight:700}
+:root{
+  --bg:#f4f7f8; --card:#fff; --ink:#0f2a33; --muted:#5d727a; --line:#e2e9ec;
+  --brand:#0b7a86; --brand-2:#0e9aa8; --soft:#e6f4f5; --ok:#1f9d55; --warn:#d97706; --wa:#25d366; --wa-bg:#e7ddd3;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;font-size:15px}
+.top{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:18px 16px 70px}
+.top .wrap{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
+.logo .mark{width:38px;height:38px;border-radius:12px;background:#fff;color:var(--brand);display:grid;place-items:center;font-size:20px}
+.badge{background:rgba(255,255,255,.18);padding:6px 12px;border-radius:999px;font-size:13px}
+.tabs{display:flex;gap:6px;background:rgba(255,255,255,.15);padding:4px;border-radius:12px}
+.tabs button{border:0;background:transparent;color:#fff;padding:8px 14px;border-radius:9px;font:inherit;cursor:pointer}
+.tabs button.on{background:#fff;color:var(--brand);font-weight:600}
+main{max-width:1100px;margin:-50px auto 40px;padding:0 16px}
+.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 6px 20px rgba(15,42,51,.05)}
+h2{margin:0 0 4px;font-size:21px;font-family:"Thmanyah Serif Display",serif;font-weight:700}
+.logo{font-family:"Thmanyah Serif Display",serif}
+.sub{color:var(--muted);margin:0 0 16px;font-size:14px}
+.step{margin-bottom:18px}
+.step-t{font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.num{width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:12px;cursor:pointer;font:inherit;color:var(--ink)}
+.chip.on{border-color:var(--brand);background:var(--soft);color:var(--brand);font-weight:600}
+.chip small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.day{min-width:64px;text-align:center}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+.slot.full{opacity:.35;pointer-events:none;text-decoration:line-through}
+input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;margin-bottom:8px}
+.btn{width:100%;border:0;background:var(--brand);color:#fff;padding:13px;border-radius:12px;font:inherit;font-weight:600;cursor:pointer;font-size:16px}
+.btn:disabled{background:#9fb7bc;cursor:not-allowed}
+.note{background:var(--soft);color:var(--brand);border-radius:12px;padding:10px 12px;font-size:13px;margin-top:10px}
+/* whatsapp */
+.phone{background:var(--wa-bg);border-radius:18px;padding:12px;min-height:420px;max-height:640px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.wa-head{position:sticky;top:-12px;z-index:1;background:#075e54;color:#fff;margin:-12px -12px 6px;padding:12px;border-radius:18px 18px 0 0;display:flex;align-items:center;gap:8px;font-weight:600}
+.wa-head .av{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center}
+.msg{background:#fff;border-radius:10px;padding:9px 11px;max-width:88%;font-size:14px;line-height:1.6;box-shadow:0 1px 1px rgba(0,0,0,.08);white-space:pre-line;animation:in .35s ease}
+.msg.me{background:#dcf8c6;align-self:flex-start}
+.msg .t{display:block;text-align:left;color:#7a8a8f;font-size:11px;margin-top:2px}
+.msg .acts{display:flex;gap:6px;margin-top:8px}
+.msg .acts button{flex:1;border:1px solid #cfe3e5;background:#f6fbfb;color:var(--brand);border-radius:8px;padding:7px;font:inherit;font-size:13px;cursor:pointer}
+.sys{align-self:center;background:#fff7d6;color:#6b5a1a;font-size:12px;padding:4px 10px;border-radius:8px}
+.empty{color:#6f6458;text-align:center;margin:auto;font-size:14px}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* admin */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
+.kpi b{font-size:26px;display:block}
+.kpi span{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:500}
+.pill{padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600}
+.p-ok{background:#e3f6ec;color:var(--ok)} .p-wait{background:#fff3e0;color:var(--warn)} .p-in{background:var(--soft);color:var(--brand)}
+.queue{display:flex;align-items:center;gap:14px;background:var(--soft);border-radius:14px;padding:14px;margin-top:12px}
+.queue b{font-size:28px;color:var(--brand)}
+.hide{display:none}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="wrap">
+    <div class="logo"><div class="mark">🦷</div>عيادة الأسنان</div>
+    <div class="tabs">
+      <button class="on" data-v="patient">صفحة المريض</button>
+      <button data-v="admin">لوحة الاستقبال</button>
+    </div>
+    <div class="badge">نموذج مقترح</div>
+  </div>
+</div>
+
+<main>
+  <!-- PATIENT -->
+  <section id="patient" class="grid">
+    <div class="card">
+      <h2>احجز موعدك في أقل من دقيقة</h2>
+      <p class="sub">من غير اتصال ومن غير انتظار على الخط</p>
+
+      <div class="step"><div class="step-t"><span class="num">1</span>الخدمة</div>
+        <div class="chips" id="services"></div></div>
+
+      <div class="step"><div class="step-t"><span class="num">2</span>الطبيب</div>
+        <div class="chips" id="doctors"></div></div>
+
+      <div class="step"><div class="step-t"><span class="num">3</span>اليوم</div>
+        <div class="days" id="days"></div></div>
+
+      <div class="step"><div class="step-t"><span class="num">4</span>الوقت</div>
+        <div class="slots" id="slots"></div></div>
+
+      <div class="step"><div class="step-t"><span class="num">5</span>بياناتك</div>
+        <input id="name" placeholder="الاسم" value="">
+        <input id="phone" placeholder="رقم الجوال 05xxxxxxxx" inputmode="tel"></div>
+
+      <button class="btn" id="book" disabled>تأكيد الحجز</button>
+      <div class="note" id="ortho-note" style="display:none">✨ متابعة التقويم: هنحجزلك موعد الشهر الجاي تلقائيًا بنفس اليوم والوقت، ومش هتحتاج تتصل</div>
+    </div>
+
+    <div class="card">
+      <h2>واتساب المريض</h2>
+      <p class="sub">الرسايل دي بتتبعت أوتوماتيك</p>
+      <div class="phone" id="wa">
+        <div class="wa-head"><div class="av">🦷</div>عيادة الأسنان</div>
+        <div class="empty" id="wa-empty">احجز موعد وشوف الرسايل بتوصل إزاي</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="hide">
+    <div class="kpis">
+      <div class="kpi"><b id="k-total">0</b><span>مواعيد النهارده</span></div>
+      <div class="kpi"><b id="k-conf">0</b><span>أكدوا على واتساب</span></div>
+      <div class="kpi"><b id="k-wait">0</b><span>مستنيين تأكيد، اتبعتلهم تذكير</span></div>
+      <div class="kpi"><b>١٢ د</b><span>متوسط الانتظار في العيادة</span></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h2>مواعيد النهارده</h2>
+        <p class="sub">التأكيد والتذكير بيحصلوا لوحدهم، والموعد ما بيتلغيش من غير ما المريض يتبلّغ</p>
+        <table><thead><tr><th>الوقت</th><th>المريض</th><th>الخدمة</th><th>الطبيب</th><th>الحالة</th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+      <div class="card">
+        <h2>الطابور دلوقتي</h2>
+        <p class="sub">كل مريض بيوصله دوره على واتساب، فمحدش بيقعد ساعات في الصالة</p>
+        <div class="queue"><b id="q-now">—</b><div>جوه عند الطبيب دلوقتي<br><small id="q-next"></small></div></div>
+        <button class="btn" id="next" style="margin-top:12px">دخّل المريض اللي بعده</button>
+        <div class="note">لما الطبيب يتأخر، كل اللي بعده بيوصلهم تحديث بالوقت الجديد</div>
+      </div>
+    </div>
+  </section>
+  <div class="foot">نموذج تجريبي، والبيانات اللي فيه وهمية · تصميم وتنفيذ أحمد مصطفى</div>
+</main>
+
+<script>
+const services=[{n:'كشف واستشارة',d:'20 دقيقة'},{n:'تنظيف',d:'30 دقيقة'},{n:'متابعة تقويم',d:'15 دقيقة',ortho:1},{n:'حشوة',d:'45 دقيقة'}];
+const doctors=['أول طبيب متاح','د. أخصائي تقويم','د. طب أسنان عام'];
+const st={s:null,d:0,day:0,slot:null};
+const $=id=>document.getElementById(id);
+const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+function chips(el,arr,key,lab){el.innerHTML='';arr.forEach((x,i)=>{const b=document.createElement('button');b.className='chip'+(st[key]===i?' on':'');b.innerHTML=lab(x);b.onclick=()=>{st[key]=i;render()};el.appendChild(b)})}
+const dayNames=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()+i);return d});
+const times=['4:00','4:30','5:00','5:30','6:00','6:30','7:00','7:30','8:00','8:30','9:00','9:30'];
+function render(){
+  chips($('services'),services,'s',x=>x.n+'<small>'+x.d+'</small>');
+  chips($('doctors'),doctors,'d',x=>x);
+  $('days').innerHTML='';days.forEach((d,i)=>{const b=document.createElement('button');b.className='chip day'+(st.day===i?' on':'');b.innerHTML=(i===0?'النهارده':dayNames[d.getDay()])+'<small>'+ar(d.getDate())+'/'+ar(d.getMonth()+1)+'</small>';b.onclick=()=>{st.day=i;st.slot=null;render()};$('days').appendChild(b)});
+  $('slots').innerHTML='';times.forEach((t,i)=>{const b=document.createElement('button');const full=(i*7+st.day*3)%5===0;b.className='chip slot'+(full?' full':'')+(st.slot===i?' on':'');b.textContent=ar(t)+' م';b.onclick=()=>{st.slot=i;render()};$('slots').appendChild(b)});
+  $('ortho-note').style.display=st.s!==null&&services[st.s].ortho?'block':'none';
+  $('book').disabled=!(st.s!==null&&st.slot!==null&&$('name').value.trim()&&$('phone').value.trim().length>=9);
+}
+['name','phone'].forEach(id=>$(id).addEventListener('input',render));
+function now(){const d=new Date();return ar(d.getHours()%12||12)+':'+ar(String(d.getMinutes()).padStart(2,'0'))}
+function msg(html,cls='',acts){$('wa-empty')?.remove();const m=document.createElement('div');m.className='msg '+cls;m.innerHTML=html+'<span class="t">'+now()+'</span>';if(acts){const a=document.createElement('div');a.className='acts';acts.forEach(([l,f])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>{a.remove();f()};a.appendChild(b)});m.appendChild(a)}$('wa').appendChild(m);$('wa').scrollTop=9e9}
+function sys(t){const s=document.createElement('div');s.className='sys';s.textContent=t;$('wa').appendChild(s)}
+const later=(f,ms)=>setTimeout(f,ms);
+$('book').onclick=()=>{
+  const name=$('name').value.trim().split(' ')[0];const sv=services[st.s];const d=days[st.day];
+  const when=(st.day===0?'النهارده':dayNames[d.getDay()]+' '+ar(d.getDate())+'/'+ar(d.getMonth()+1))+' الساعة '+ar(times[st.slot])+' م';
+  appts.push({t:times[st.slot],n:$('name').value.trim(),s:sv.n,doc:doctors[st.d],state:'wait'});drawAdmin();
+  msg(`أهلًا ${name} 👋\nتم حجز موعدك في العيادة\n\n🦷 ${sv.n}\n📅 ${when}\n📍 موقع العيادة على الخريطة`);
+  const today=st.day===0;
+  later(()=>{sys(today?'قبل الموعد بـ 3 ساعات':'قبل الموعد بيوم');msg(`تذكير يا ${name}، موعدك ${today?'النهارده':'بكرة'} الساعة ${ar(times[st.slot])} م\nتقدر تأكد أو تغيّر من هنا`,'',[['✅ تأكيد',()=>{msg('تأكيد','me');appts[appts.length-1].state='ok';drawAdmin();later(()=>msg('تمام، موعدك متأكد 👍'),500)}],['🔄 تغيير الموعد',()=>{msg('تغيير الموعد','me');later(()=>msg('اختار وقت تاني من اللينك ده:\nclinic.sa/book'),500)}]])},1400);
+  later(()=>{sys('قبل الموعد بساعتين');msg(`قدامك ٢ مرضى عند الطبيب\nالأفضل توصل الساعة ${ar(times[st.slot])} بالظبط، ومش محتاج تيجي بدري`)},3200);
+  if(sv.ortho)later(()=>{sys('بعد الجلسة');msg(`شكرًا ${name} 🌟\nحجزنالك متابعة التقويم الجاية تلقائيًا:\n📅 بعد شهر، نفس اليوم ونفس الوقت\nلو عايز تغيّره رد علينا هنا`)},5000);
+};
+// admin
+const appts=[{t:'4:00',n:'سارة العتيبي',s:'متابعة تقويم',doc:'د. أخصائي تقويم',state:'in'},{t:'4:30',n:'خالد القحطاني',s:'تنظيف',doc:'د. طب أسنان عام',state:'ok'},{t:'5:00',n:'نورة الدوسري',s:'كشف واستشارة',doc:'د. طب أسنان عام',state:'ok'},{t:'5:30',n:'فهد الشمري',s:'حشوة',doc:'د. طب أسنان عام',state:'wait'},{t:'6:00',n:'ريم المطيري',s:'متابعة تقويم',doc:'د. أخصائي تقويم',state:'ok'}];
+const lab={ok:['p-ok','أكد'],wait:['p-wait','اتبعتله تذكير'],in:['p-in','جوه دلوقتي'],done:['p-ok','خلص']};
+function drawAdmin(){const list=[...appts].sort((a,b)=>a.t.localeCompare(b.t,'en',{numeric:true}));$('rows').innerHTML=list.map(a=>`<tr><td>${ar(a.t)}</td><td>${a.n}</td><td>${a.s}</td><td>${a.doc}</td><td><span class="pill ${lab[a.state][0]}">${lab[a.state][1]}</span></td></tr>`).join('');
+  $('k-total').textContent=ar(list.length);$('k-conf').textContent=ar(list.filter(a=>a.state==='ok'||a.state==='in'||a.state==='done').length);$('k-wait').textContent=ar(list.filter(a=>a.state==='wait').length);
+  const cur=list.find(a=>a.state==='in');const nx=list.find(a=>a.state==='ok'||a.state==='wait');$('q-now').textContent=cur?cur.n.split(' ')[0]:'—';$('q-next').textContent=nx?'اللي بعده: '+nx.n+'، واتبعتله إن دوره قرّب':'';}
+$('next').onclick=()=>{const list=[...appts].sort((a,b)=>a.t.localeCompare(b.t,'en',{numeric:true}));const cur=list.find(a=>a.state==='in');if(cur)cur.state='done';const nx=list.find(a=>a.state==='ok'||a.state==='wait');if(nx)nx.state='in';drawAdmin()};
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('patient').classList.toggle('hide',b.dataset.v!=='patient');$('admin').classList.toggle('hide',b.dataset.v!=='admin')});
+render();drawAdmin();
+</script>
+</body>
+</html>
